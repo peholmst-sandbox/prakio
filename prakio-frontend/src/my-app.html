@@ -1,11 +1,5 @@
 <!--
 @license
-Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
@@ -20,20 +14,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="my-icons.html">
 
-<link rel="lazy-import" href="my-view1.html">
-<link rel="lazy-import" href="my-view2.html">
-<link rel="lazy-import" href="my-view3.html">
-<link rel="lazy-import" href="my-view404.html">
+<link rel="import" href="../bower_components/vaadin-icons/vaadin-icons.html">
+
+<!-- Theme with colors -->
+<link rel="import" href="app-theme.html">
+
+<!-- Lazily import views. They will be explicitly imported on demand using JavaScript. -->
+<link rel="lazy-import" href="assignments-view.html">
+<link rel="lazy-import" href="error-view.html">
 
 <dom-module id="my-app">
   <template>
-    <style>
+    <style include="app-theme">
       :host {
-        --app-primary-color: #4285f4;
-        --app-secondary-color: black;
-
         display: block;
       }
 
@@ -43,7 +37,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       app-header {
         color: #fff;
-        background-color: var(--app-primary-color);
+        background-color: var(--default-primary-color);
       }
 
       app-header paper-icon-button {
@@ -68,15 +62,60 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
+    <!-- 
+      I've added longer comments than I usually do to this HTML document. The reason is that this application
+      is my first serious attempt at creating a fully functional Polymer application and writing extensive comments
+      is a way of learning and figuring out what everything does and how the parts fit together.
+    -->   
+
+    <!--
+      The 'app-location' element synchronizes the browser location bar and the state of the web app.
+        
+        'route' is used to pass information to the 'app-route' element below.
+        
+        'url-space-regex' specifies what kind of URLs should be considered part of this web app.
+          Links matching this regex will only cause the URL state to be updated in place, without
+          actually navigating to the new page. 'rootPath' is a property that contains the root path
+          of the web app, so in this case we match all URLs that begin with the root path of our app.
+    -->
     <app-location route="{{route}}" url-space-regex="^[[rootPath]]"></app-location>
+    <!--
+      The 'app-route' element is used to drive the actualy routing within the web page, even though
+      it does not care what happens when a route is changed.
+        
+        'route' is used to link this element with the 'app-location' element. We don't access this
+          information directly anywhere else in the application.
+
+        'pattern' is the pattern that should be matched for the 'data' property to be updated. 'rootPath'
+          contains the root path of the web app and ':page' is the placeholder for the page that we
+          should navigate to. So for example, if the path is '/about' and the pattern is '/:page', then
+          the page we are navigating to will be 'about'.
+
+        'data' is a property that changes when a matching route has been found. This is the property
+          the application is using to actually change the DOM.
+
+        'tail' is a property that contains any remaining parts of the route state after the pattern has
+          been applied.
+    -->
     <app-route
         route="{{route}}"
         pattern="[[rootPath]]:page"
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
+    <!-- 
+      This is the main layout of the application. 
+      
+        'fullbleed' causes the layout to fill the entire container (screen).
+
+        'narrow' is a read-only property that is bound so that we can react when it changes. 
+    -->
     <app-drawer-layout fullbleed narrow="{{narrow}}">
-      <!-- Drawer content -->
+      <!-- 
+        The drawer is the main menu that can slide in from the left. When the layout is 'narrow'.
+        the main menu is automatically hidden but can be swiped open. The menu can also be toggled from
+        the menu button.
+      -->
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
@@ -89,22 +128,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <!-- Main content -->
       <app-header-layout has-scrolling-region>
 
-        <app-header slot="header" condenses reveals effects="waterfall">
+        <app-header slot="header" reveals effects="waterfall">
           <app-toolbar>
-            <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
-            <div main-title>My App</div>
+            <paper-icon-button icon="vaadin:menu" drawer-toggle></paper-icon-button>
+            <div main-title>[[pageTitle]]</div>
+            <paper-progress value="10" indeterminate bottom-item></paper-progress>
           </app-toolbar>
-        </app-header>
+        </app-header>        
 
+        <!--
+          The 'iron-pages' element is used for actually navigating between views, updating the DOM.
+          The views are themselves custom elements that are loaded on demand using JavaScript.
+
+          'selected' is the currently selected view/page.
+
+          'attr-for-selected' is an attribute on the child elements of 'iron-pages' that should be used
+            to pick the correct view to show.
+
+          'fallback-selection' is the view that should be shown if 'selected' contains a value that can't
+            be found within the child elements.
+
+          'role' is used for ARIA and has nothing to do with the 'iron-pages' element itself.
+        -->
         <iron-pages
             selected="[[page]]"
             attr-for-selected="name"
-            fallback-selection="view404"
+            fallback-selection="error"
             role="main">
-          <my-view1 name="view1"></my-view1>
-          <my-view2 name="view2"></my-view2>
-          <my-view3 name="view3"></my-view3>
-          <my-view404 name="view404"></my-view404>
+          <assignments-view name="assignments" title="{{pageTitle}}"></assignments-view>
+          <!-- TODO Add additional views here. Files should be named '[name]-view.html'. -->
+          <error-view name="error" title="{{pageTitle}}"></error-view>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
@@ -131,14 +184,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       static get observers() {
         return [
+          // A complex observer that observes a change of a nested property.
           '_routePageChanged(routeData.page)',
         ];
       }
 
+      // This method is invoked whenever the 'routeData.page' property is changed. This means
+      // we should navigate to a different view within our application.
       _routePageChanged(page) {
         // If no page was found in the route data, page will be an empty string.
-        // Deault to 'view1' in that case.
-        this.page = page || 'view1';
+        // Deault to 'assignments' in that case.
+        this.page = page || 'assignments';
 
         // Close a non-persistent drawer when the page & route are changed.
         if (!this.$.drawer.persistent) {
@@ -146,18 +202,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
 
+      // This method is invoked whenever the 'page' property is changed. This property can be set as
+      // an attribute of the 'my-app' element, but is also set by e.g. the '_routePageChanged' method.
       _pageChanged(page) {
-        // Load page import on demand. Show 404 page if fails
-        var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
+        // Load page on demand. Show error view on failures.
+        var resolvedPageUrl = this.resolveUrl(page + '-view.html');
         Polymer.importHref(
             resolvedPageUrl,
             null,
-            this._showPage404.bind(this),
+            this._showErrorPage.bind(this),
             true);
       }
 
-      _showPage404() {
-        this.page = 'view404';
+      // This method shows the error view. The error view is treated as any other view and needs to be
+      // declared and imported like the others.
+      _showErrorPage() {
+        this.page = 'error';
       }
     }
 

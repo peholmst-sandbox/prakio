@@ -1,0 +1,54 @@
+<!--
+@license
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="assignment-card.html">
+
+<dom-module id="assignments-view">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+
+      #cards {
+          display: flex;
+          flex-wrap: wrap;
+      }
+    </style>
+    <!-- TODO toolbar -->
+    <!-- TODO grid view -->
+    <div id="cards">
+        <assignment-card></assignment-card>
+        <assignment-card></assignment-card>
+        <assignment-card></assignment-card>
+        <assignment-card></assignment-card>
+        <assignment-card></assignment-card>
+        <assignment-card></assignment-card>
+        <assignment-card></assignment-card>
+    </div>
+  </template>
+
+  <script>
+    class AssignmentsView extends Polymer.Element {
+      static get is() { return 'assignments-view'; }
+
+      static get properties() {
+        return {
+          title: {
+            type: String,
+            value: 'Assignments',
+            readOnly: true,
+            notify: true
+          }
+        };
+      }
+    }
+
+    window.customElements.define(AssignmentsView.is, AssignmentsView);
+  </script>
+</dom-module>

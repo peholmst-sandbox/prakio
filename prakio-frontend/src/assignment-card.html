@@ -1,0 +1,64 @@
+<!--
+@license
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="assignment-card">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 16px;
+        margin: 24px;
+        border-radius: 5px;
+        background-color: #fff;   
+        flex-grow: 1;   
+        cursor: pointer; 
+
+        @apply --shadow-elevation-3dp;
+        @apply --paper-font-common-base;
+      }
+
+      #code {
+        color: var(--primary-text-color);
+        display: inline;
+        font-size: 22px;
+        background-color: var(--accent-color);
+        border-radius: 20%;
+        padding: 5px;
+      }
+
+      #description {
+        color: var(--secondary-text-color);
+        display: inline;
+        font-size: 18px;
+        margin-left: 5px;  
+      }
+
+      #location {
+        margin: 5px 0px 5px 0px;
+      }
+
+      #dateTime {
+        color: var(--secondary-text-color);
+        font-size: 12px;
+      }
+    </style>
+    
+    <div id="code">401</div>
+    <div id="description">Building fire: small</div>
+    <div id="location">Skolgatan 1, Pargas</div>
+    <div id="dateTime">Aug 16, 2017 16:25:23</div>
+
+  </template>
+
+  <script>
+    class AssignmentCard extends Polymer.Element {
+      static get is() { return 'assignment-card'; }
+    }
+
+    window.customElements.define(AssignmentCard.is, AssignmentCard);
+  </script>
+</dom-module>
