@@ -1,0 +1,48 @@
+{
+    "assignments_brief": [
+        {
+            "id": 1,
+            "code": "402",
+            "description": "building fire: medium",
+            "location": {
+                "municipality": "Pargas",
+                "address": "Skolgatan 1"
+            },
+            "timestamp": "2017-08-14T19:45:21Z",
+            "state": "pending"
+        },
+        {
+            "id": 2,
+            "code": "202",
+            "description": "motor vehicle accident: small",
+            "location": {
+                "municipality": "Pargas",
+                "address": "Skärgårdsvägen"                
+            },
+            "timestamp": "2017-08-01T02:11:32Z",
+            "state": "draft"
+        },
+        {
+            "id": 3,
+            "code": "421",
+            "description": "terrain fire: small",
+            "location": {
+                "municipality": "Pargas",
+                "address": "Sydmovägen"
+            },
+            "timestamp": "2017-07-16T15:23:45Z",
+            "state": "done"
+        },
+        {
+            "id": 4,
+            "code": "103",
+            "description": "automatic fire alarm",
+            "location": {
+                "municipality": "Pargas",
+                "address": "Vapparvägen"
+            },
+            "timestamp": "2017-07-15T23:10:01Z",
+            "state": "done"
+        }
+    ]
+}

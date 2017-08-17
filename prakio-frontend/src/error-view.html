@@ -3,10 +3,11 @@
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="shared-styles.html">
 
 <dom-module id="error-view">
   <template>
-    <style>
+    <style include="shared-styles">
       :host {
         display: block;
 
@@ -14,7 +15,9 @@
       }
     </style>
 
-    Oops you hit a 404. <a href="[[rootPath]]">Head back to home.</a>
+    <div class="error">
+      The page you are trying to access does not exist. Click <a href="[[rootPath]]">here</a> to start over.
+    </div>
   </template>
 
   <script>
@@ -24,7 +27,7 @@
         return {
           // This shouldn't be neccessary, but the Analyzer isn't picking up
           // Polymer.Element#rootPath
-          rootPath: String,
+          rootPath: String
         };
       }
     }

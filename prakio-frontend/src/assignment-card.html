@@ -11,10 +11,10 @@
       :host {
         display: block;
         padding: 16px;
-        margin: 24px;
+        margin: 24px 0 0 24px;
         border-radius: 5px;
         background-color: #fff;   
-        flex-grow: 1;   
+        color: var(--primary-text-color);
         cursor: pointer; 
 
         @apply --shadow-elevation-3dp;
@@ -22,7 +22,6 @@
       }
 
       #code {
-        color: var(--primary-text-color);
         display: inline;
         font-size: 22px;
         background-color: var(--accent-color);
@@ -41,16 +40,16 @@
         margin: 5px 0px 5px 0px;
       }
 
-      #dateTime {
+      #timestamp {
         color: var(--secondary-text-color);
         font-size: 12px;
       }
     </style>
     
-    <div id="code">401</div>
-    <div id="description">Building fire: small</div>
-    <div id="location">Skolgatan 1, Pargas</div>
-    <div id="dateTime">Aug 16, 2017 16:25:23</div>
+    <div id="code">[[code]]</div>
+    <div id="description">[[description]]</div>
+    <div id="location">[[location]]</div>
+    <div id="timestamp">[[timestamp]]</div> <!-- TODO Format date and time -->
 
   </template>
 

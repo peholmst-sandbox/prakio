@@ -18,15 +18,15 @@
 <link rel="import" href="../bower_components/vaadin-icons/vaadin-icons.html">
 
 <!-- Theme with colors -->
-<link rel="import" href="app-theme.html">
+<link rel="import" href="shared-styles.html">
 
 <!-- Lazily import views. They will be explicitly imported on demand using JavaScript. -->
 <link rel="lazy-import" href="assignments-view.html">
 <link rel="lazy-import" href="error-view.html">
 
-<dom-module id="my-app">
+<dom-module id="prakio-app">
   <template>
-    <style include="app-theme">
+    <style include="shared-styles">
       :host {
         display: block;
       }
@@ -38,6 +38,7 @@
       app-header {
         color: #fff;
         background-color: var(--default-primary-color);
+        @apply --shadow-elevation-3dp;
       }
 
       app-header paper-icon-button {
@@ -117,6 +118,7 @@
         the menu button.
       -->
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
+        <!-- TODO Implement menu -->
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="view1" href="[[rootPath]]view1">View One</a>
@@ -130,9 +132,8 @@
 
         <app-header slot="header" reveals effects="waterfall">
           <app-toolbar>
-            <paper-icon-button icon="vaadin:menu" drawer-toggle></paper-icon-button>
-            <div main-title>[[pageTitle]]</div>
-            <paper-progress value="10" indeterminate bottom-item></paper-progress>
+            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+            <!-- TODO How to fill in parts here from the iron-pages below? -->
           </app-toolbar>
         </app-header>        
 
@@ -155,17 +156,17 @@
             attr-for-selected="name"
             fallback-selection="error"
             role="main">
-          <assignments-view name="assignments" title="{{pageTitle}}"></assignments-view>
+          <assignments-view name="assignments"></assignments-view>
           <!-- TODO Add additional views here. Files should be named '[name]-view.html'. -->
-          <error-view name="error" title="{{pageTitle}}"></error-view>
+          <error-view name="error"></error-view>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
   </template>
 
   <script>
-    class MyApp extends Polymer.Element {
-      static get is() { return 'my-app'; }
+    class PrakioApp extends Polymer.Element {
+      static get is() { return 'prakio-app'; }
 
       static get properties() {
         return {
@@ -203,7 +204,7 @@
       }
 
       // This method is invoked whenever the 'page' property is changed. This property can be set as
-      // an attribute of the 'my-app' element, but is also set by e.g. the '_routePageChanged' method.
+      // an attribute of the 'prakio-app' element, but is also set by e.g. the '_routePageChanged' method.
       _pageChanged(page) {
         // Load page on demand. Show error view on failures.
         var resolvedPageUrl = this.resolveUrl(page + '-view.html');
@@ -221,6 +222,6 @@
       }
     }
 
-    window.customElements.define(MyApp.is, MyApp);
+    window.customElements.define(PrakioApp.is, PrakioApp);
   </script>
 </dom-module>

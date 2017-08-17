@@ -15,8 +15,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta name="generator" content="Polymer Starter Kit">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>My App</title>
-    <meta name="description" content="My App description">
+    <title>PRAKIO</title>
+    <meta name="description" content="My App description"> <!-- TODO Come up with a description -->
 
     <!--
       The `<base>` tag below is present to support two advanced deployment options:
@@ -77,6 +77,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       */
       window.Polymer = {rootPath: '/'};
 
+      // Application configuration
+      window.AppConfiguration = {
+        apiEndpoint: 'http://localhost:3000'
+      };    
+
       // Load and register pre-caching Service Worker
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
@@ -91,7 +96,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
 
     <!-- Load your application shell -->
-    <link rel="import" href="src/my-app.html">
+    <link rel="import" href="src/prakio-app.html">
 
     <!-- Add any global styles for body, document, etc. -->
     <style>
@@ -105,7 +110,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
   </head>
   <body>
-    <my-app></my-app>
+    <prakio-app></prakio-app>
     <noscript>
       Please enable JavaScript to view this website.
     </noscript>

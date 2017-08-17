@@ -19,7 +19,9 @@
     "vaadin-date-picker": "^2.0.2",
     "vaadin-combo-box": "^2.0.0",
     "vaadin-grid": "^3.0.1",
-    "paper-progress": "^2.0.1"
+    "paper-progress": "^2.0.1",
+    "paper-fab": "PolymerElements/paper-fab#^2.0.0",
+    "iron-icons": "PolymerElements/iron-icons#^2.0.1"
   },
   "resolutions": {
     "polymer": "^2.0.0"

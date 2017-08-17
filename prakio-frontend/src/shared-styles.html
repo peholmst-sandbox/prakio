@@ -15,10 +15,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!-- Import theme with colors -->
 <link rel="import" href="app-theme.html">
 
+<!-- Import icons -->
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/vaadin-icons/vaadin-icons.html">
+
 <!-- shared styles for all views -->
 <dom-module id="shared-styles">
   <template>
-    <style>
+    <style include="app-theme">
       .card {
         margin: 24px;
         padding: 16px;
@@ -44,6 +48,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         margin: 16px 0;
         color: #212121;
         font-size: 22px;
+      }
+
+      .error {
+        display: block;
+        background-color: var(--paper-deep-orange-200);
+        margin: 24px;
+        padding: 16px;
+        border: 1px solid var(--paper-deep-orange-a700);
+        border-radius: 5px;
+        color: var(--paper-grey-900);        
+
+        @apply --shadow-elevation-3dp;
+        @apply --paper-font-common-base;        
       }
     </style>
   </template>
