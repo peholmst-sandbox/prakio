@@ -57,6 +57,13 @@
                         type: Boolean,
                         readOnly: true,
                         notify: true
+                    },
+                    /** Whether the main application layout is narrow or not. */
+                    narrow: {
+                        value: false,
+                        type: Boolean,
+                        reflectToAttribute: true,
+                        observer: '_onNarrowChanged'
                     }
                 };
             }
@@ -88,6 +95,12 @@
                 }
             }
 
+            _onNarrowChanged(newValue) {
+                if (this._viewElement) {
+                    this._viewElement.narrow = newValue;
+                }
+            }
+
             /**
              * Shows the view, adding it to the light DOM of the `<prakio-view>` element.
              * If the view is already visible, nothing happens.
@@ -101,6 +114,7 @@
                     this._resolve(() => {
                         if (!this.persistent || !this._viewElement) {
                             this._viewElement = document.createElement(this.elementName);
+                            this._viewElement.narrow = this.narrow; // Move value of 'narrow' property to view
                         }
                         this.appendChild(this._viewElement);
                         this._setVisible(true);

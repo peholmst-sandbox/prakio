@@ -24,144 +24,91 @@
 <link rel="import" href="prakio-view.html">
 
 <dom-module id="prakio-app">
-  <template>
-    <style include="shared-styles">
-      :host {
-        display: block;
-      }
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                @apply --paper-font-common-base;                
+            }
 
-      app-drawer-layout:not([narrow]) [drawer-toggle] {
-        display: none;
-      }    
+            .drawer-list {
+                margin: 0 20px;
+            }
 
-      .drawer-list {
-        margin: 0 20px;
-      }
+            .drawer-list a {
+                display: block;
+                padding: 0 16px;
+                text-decoration: none;
+                color: var(--primary-text-color);
+                line-height: 40px;
+            }
 
-      .drawer-list a {
-        display: block;
-        padding: 0 16px;
-        text-decoration: none;
-        color: var(--app-secondary-color);
-        line-height: 40px;
-      }
+            .drawer-list a.iron-selected {
+                background-color: var(--accent-color);
+            }
+        </style>
 
-      .drawer-list a.iron-selected {
-        color: black;
-        font-weight: bold;
-      }
-    </style>
+        <!-- Match all URLs that begin with the root path of the application. -->
+        <app-location route="{{route}}" url-space-regex="^[[rootPath]]"></app-location>
+        <app-route
+            route="{{route}}"
+            pattern="[[rootPath]]:page"
+            data="{{routeData}}"
+            tail="{{subroute}}"></app-route>
 
-    <!-- 
-      I've added longer comments than I usually do to this HTML document. The reason is that this application
-      is my first serious attempt at creating a fully functional Polymer application and writing extensive comments
-      is a way of learning and figuring out what everything does and how the parts fit together.
-    -->   
+        <app-drawer-layout fullbleed narrow="{{narrow}}">
+            <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
+                <app-toolbar>PRAKIO</app-toolbar>
+                <iron-selector selected="[[view]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                    <a name="assignments" href="[[rootPath]]assignments">Assignment Reports</a>
+                </iron-selector>
+            </app-drawer>
 
-    <!--
-      The 'app-location' element synchronizes the browser location bar and the state of the web app.
-        
-        'route' is used to pass information to the 'app-route' element below.
-        
-        'url-space-regex' specifies what kind of URLs should be considered part of this web app.
-          Links matching this regex will only cause the URL state to be updated in place, without
-          actually navigating to the new page. 'rootPath' is a property that contains the root path
-          of the web app, so in this case we match all URLs that begin with the root path of our app.
-    -->
-    <app-location route="{{route}}" url-space-regex="^[[rootPath]]"></app-location>
-    <!--
-      The 'app-route' element is used to drive the actualy routing within the web page, even though
-      it does not care what happens when a route is changed.
-        
-        'route' is used to link this element with the 'app-location' element. We don't access this
-          information directly anywhere else in the application.
+            <prakio-views selected="[[view]]">
+                <!-- TODO How to pass subroute info to the view that becomes visible? -->
+                <prakio-view name="assignments" href="views/assignments-view.html" element-name="assignments-view" narrow="[[narrow]]">
+            </prakio-views>
+        </app-drawer-layout>
+    </template>
 
-        'pattern' is the pattern that should be matched for the 'data' property to be updated. 'rootPath'
-          contains the root path of the web app and ':page' is the placeholder for the page that we
-          should navigate to. So for example, if the path is '/about' and the pattern is '/:page', then
-          the page we are navigating to will be 'about'.
+    <script>
+        class PrakioApp extends Polymer.Element {
+            static get is() { return 'prakio-app'; }
 
-        'data' is a property that changes when a matching route has been found. This is the property
-          the application is using to actually change the DOM.
+            static get properties() {
+                return {
+                    view: {
+                        type: String,
+                        reflectToAttribute: true
+                    },
+                    routeData: Object,
+                    subroute: String,
+                    // This shouldn't be neccessary, but the Analyzer isn't picking up
+                    // Polymer.Element#rootPath
+                    rootPath: String,
+                };
+            }
 
-        'tail' is a property that contains any remaining parts of the route state after the pattern has
-          been applied.
-    -->
-    <app-route
-        route="{{route}}"
-        pattern="[[rootPath]]:page"
-        data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
+            static get observers() {
+                return [
+                    // A complex observer that observes a change of a nested property.
+                    '_routePageChanged(routeData.page)',
+                ];
+            }
 
-    <!-- 
-      This is the main layout of the application. 
-      
-        'fullbleed' causes the layout to fill the entire container (screen).
+            // This method is invoked whenever the 'routeData.page' property is changed. This means
+            // we should navigate to a different view within our application.
+            _routePageChanged(page) {
+                // If no page was found in the route data, page will be an empty string.
+                // Deault to 'assignments' in that case.
+                this.view = page || 'assignments';
 
-        'narrow' is a read-only property that is bound so that we can react when it changes. 
-    -->
-    <app-drawer-layout fullbleed narrow="{{narrow}}">
-      <!-- 
-        The drawer is the main menu that can slide in from the left. When the layout is 'narrow'.
-        the main menu is automatically hidden but can be swiped open. The menu can also be toggled from
-        the menu button.
-      -->
-      <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
-        <!-- TODO Implement menu -->
-        <app-toolbar>PRAKIO</app-toolbar>
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="[[rootPath]]assignments">Assignments</a>
-          <a name="view2" href="[[rootPath]]view2">View Two</a>
-          <a name="view3" href="[[rootPath]]view3">View Three</a>
-        </iron-selector>
-      </app-drawer>
-
-      <!-- Main content -->
-      <prakio-views selected="[[page]]">
-        <prakio-view name="assignments" href="views/assignments-view.html" element-name="assignments-view">
-       </prakio-views>
-    </app-drawer-layout>
-  </template>
-
-  <script>
-    class PrakioApp extends Polymer.Element {
-      static get is() { return 'prakio-app'; }
-
-      static get properties() {
-        return {
-          page: {
-            type: String,
-            reflectToAttribute: true
-          },
-          routeData: Object,
-          subroute: String,
-          // This shouldn't be neccessary, but the Analyzer isn't picking up
-          // Polymer.Element#rootPath
-          rootPath: String,
-        };
-      }
-
-      static get observers() {
-        return [
-          // A complex observer that observes a change of a nested property.
-          '_routePageChanged(routeData.page)',
-        ];
-      }
-
-      // This method is invoked whenever the 'routeData.page' property is changed. This means
-      // we should navigate to a different view within our application.
-      _routePageChanged(page) {
-        // If no page was found in the route data, page will be an empty string.
-        // Deault to 'assignments' in that case.
-        this.page = page || 'assignments';
-
-        // Close a non-persistent drawer when the page & route are changed.
-        if (!this.$.drawer.persistent) {
-          this.$.drawer.close();
+                // Close a non-persistent drawer when the page & route are changed.
+                if (!this.$.drawer.persistent) {
+                    this.$.drawer.close();
+                }
+            }
         }
-      }
-    }
-
-    window.customElements.define(PrakioApp.is, PrakioApp);
-  </script>
+        window.customElements.define(PrakioApp.is, PrakioApp);
+    </script>
 </dom-module>

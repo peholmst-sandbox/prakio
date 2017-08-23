@@ -14,8 +14,6 @@
 
 <link rel="import" href="../shared-styles.html">
 
-<link rel="import" href="assignment-card.html">
-
 <dom-module id="assignments-view">
     <template>
         <style include="shared-styles">
@@ -23,9 +21,61 @@
                 display: block;
             }
 
-            #cards {
-                display: flex;
-                flex-wrap: wrap;
+            .list {
+                display: block;
+                padding: 8px 0;
+                /* TODO We may need to add additional padding to the bottom so that nothing is hidden behind the FAB */
+            }
+
+            .list-item {
+                display: grid;
+                grid-template-columns: 40px auto;
+                grid-template-rows: auto auto;
+                grid-column-gap: 16px;
+                padding: 16px;
+                min-height: 40px;   
+                cursor: pointer;          
+            }
+
+            .list-item + .list-item {
+                border-top: 1px solid var(--divider-color);    
+            }
+
+            .list-item .code {
+                font-size: 16px;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                grid-row: 1 / span 2;
+                grid-column: 1 / 1;
+                justify-self: center;
+                align-self: center;
+                text-align: center;
+                line-height: 40px;
+            }
+
+            .list-item .primary {
+                font-size: 16px;
+                color: var(--primary-text-color);
+                grid-row: 1 / 1;
+                grid-column: 2 / 2;
+                justify-self: left;
+            }
+
+            .list-item .secondary {
+                font-size: 14px;
+                color: var(--secondary-text-color);
+                grid-row: 2 / 2;
+                grid-column: 2 / 2;
+                justify-self: left;
+            }
+
+            .list-item .state {
+                font-size: 10px;
+                text-transform: uppercase;
+                font-weight: bolder;
+                padding: 2px 6px;
+                border-radius: 2px;
             }
 
             .pending {
@@ -34,6 +84,29 @@
 
             .done {
                 background-color: var(--google-green-100);
+            }
+
+            .draft {
+                background-color: var(--google-yellow-300);
+            }
+
+            #toggle-menu.narrow {
+                display: inline-block;
+            }
+
+            #toggle-menu {
+                display: none;
+            }
+
+            paper-fab {
+                position: fixed;
+                right: 16px;
+                bottom: 16px;
+                /* TODO Change to 24px on tablet and desktop */
+            }
+
+            app-header app-toolbar .narrow [main-title] {
+                padding-left: 8px;
             }
         </style>
 
@@ -47,10 +120,10 @@
             loading="{{loadingAssignments}}"></iron-ajax>
 
         <app-header-layout>
-            <app-header slot="header" >
+            <app-header slot="header" reveals effects="waterfall">
                 <app-toolbar>
-                    <paper-icon-button icon="menu"></paper-icon-button> <!-- TODO How to toggle sidebar and show/hide button -->
-                    <div main-title>Assignments</div>
+                    <paper-icon-button icon="menu" id="toggle-menu"></paper-icon-button> <!-- TODO How to toggle sidebar -->
+                    <div main-title>Assignment Reports</div>
                 </app-toolbar>
                 <template is="dom-if" if="[[loadingAssignments]]">
                     <paper-progress value="10" indeterminate></paper-progress>        
@@ -62,15 +135,22 @@
                         There was an error retrieving assignments. Please try again.
                     </div>
                 </template>
-                <div id="cards">
+                <div class="list">
                     <template is="dom-repeat" items="[[assignments]]">
-                        <assignment-card 
-                            code="[[item.code]]"
-                            description="[[item.description]]"
-                            location="[[item.location.municipality]], [[item.location.address]]"
-                            timestamp="[[item.timestamp]]"
-                            class$="[[item.state]]">
-                        </assignment-card>
+                        <div class="list-item">
+                            <div class$="code [[item.state]]">[[item.code]]</div>
+                            <div class="primary">
+                                [[item.description]]
+                                <template is="dom-if" if="[[_isPending(item.state)]]">
+                                    <span class="state pending">pending</span>
+                                </template>
+                                <template is="dom-if" if="[[_isDraft(item.state)]]">
+                                    <span class="state draft">draft</span>
+                                </template>
+                            </div>
+                            <div class="secondary">[[item.location.municipality]], [[item.location.address]]</div>
+                            <!-- TODO Add timestamp somewhere -->
+                        </div>
                     </template>
                     <!-- TODO Show text if there are no assignments -->
                 </div>
@@ -88,8 +168,33 @@
                     apiEndpoint: {
                         type: String,
                         value: AppConfiguration.apiEndpoint
+                    },
+                    narrow: {
+                        type: Boolean,
+                        notify: true,
+                        observer: '_onNarrowChanged'
                     }
                 };
+            }
+
+            _isPending(state) {
+                return state === 'pending';
+            }
+
+            _isDraft(state) {
+                return state === 'draft';
+            }
+
+            _onNarrowChanged(newValue) {
+                console.log("Narrow changed inside assignments view, narrow is: " + newValue);
+                // TODO Add class to a header element and use selectors to update the individual elements instead
+                let toggleButton = this.$['toggle-menu'];
+                if (newValue) {
+                    toggleButton.classList.add('narrow');
+                } else {
+                    toggleButton.classList.remove('narrow');
+                }
+                // TODO Show/hide the menu button and tweak the title
             }
         }
         window.customElements.define(AssignmentsView.is, AssignmentsView);
