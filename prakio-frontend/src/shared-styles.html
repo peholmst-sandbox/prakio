@@ -1,11 +1,5 @@
 <!--
 @license
-Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
@@ -21,47 +15,63 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <!-- shared styles for all views -->
 <dom-module id="shared-styles">
-  <template>
-    <style include="app-theme">
-      .card {
-        margin: 24px;
-        padding: 16px;
-        color: #757575;
-        border-radius: 5px;
-        background-color: #fff;
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
-      }
+    <template>
+        <style include="app-theme">
+            app-header {
+                color: #fff;
+                background-color: var(--default-primary-color);
+                
+                @apply --shadow-elevation-3dp;
+            }
 
-      .circle {
-        display: inline-block;
-        width: 64px;
-        height: 64px;
-        text-align: center;
-        color: #555;
-        border-radius: 50%;
-        background: #ddd;
-        font-size: 30px;
-        line-height: 64px;
-      }
+            app-header paper-icon-button {
+                --paper-icon-button-ink-color: white;
+            }      
 
-      h1 {
-        margin: 16px 0;
-        color: #212121;
-        font-size: 22px;
-      }
+            app-header paper-progress {
+                --paper-progress-active-color: var(--dark-primary-color);
+                width: 100%;
+            }
 
-      .error {
-        display: block;
-        background-color: var(--paper-deep-orange-200);
-        margin: 24px;
-        padding: 16px;
-        border: 1px solid var(--paper-deep-orange-a700);
-        border-radius: 5px;
-        color: var(--paper-grey-900);        
+            .card {
+                margin: 24px;
+                padding: 16px;
+                color: #757575;
+                border-radius: 5px;
+                background-color: #fff;
+                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+            }
 
-        @apply --shadow-elevation-3dp;
-        @apply --paper-font-common-base;        
-      }
-    </style>
-  </template>
+            .circle {
+                display: inline-block;
+                width: 64px;
+                height: 64px;
+                text-align: center;
+                color: #555;
+                border-radius: 50%;
+                background: #ddd;
+                font-size: 30px;
+                line-height: 64px;
+            }
+
+            h1 {
+                margin: 16px 0;
+                color: #212121;
+                font-size: 22px;
+            }
+
+            .error {
+                display: block;
+                background-color: var(--paper-deep-orange-200);
+                margin: 24px;
+                padding: 16px;
+                border: 1px solid var(--paper-deep-orange-a700);
+                border-radius: 5px;
+                color: var(--paper-grey-900);        
+
+                @apply --shadow-elevation-3dp;
+                @apply --paper-font-common-base;        
+            }
+        </style>
+    </template>
 </dom-module>

@@ -1,0 +1,129 @@
+<!--
+@license
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="prakio-view">
+    <script>
+        /**
+         * `<prakio-view>` is an element that represents a view inside a `<prakio-views>` container element.
+         */
+        class PrakioView extends Polymer.Element {
+            static get is() { return 'prakio-view'; }
+            
+            static get properties() {
+                return {
+                    /** 
+                     * The name of the view. This must be unique within the enclosing `<prakio-views>` container 
+                     * and is used when finding the view to show after the `selected` property of the container has been changed.
+                     */
+                    name: {
+                        type: String,
+                        reflectToAttribute: true
+                    },
+                    /**
+                     * The name of the custom element that implements the view. This is used to create the view element
+                     * when the view becomes visible.
+                     */
+                    elementName: {
+                        type: String,
+                        reflectToAttribute: true
+                    },
+                    /** 
+                     * Whether the same element instance should be reused (true) or a new instance should be created
+                     * every time the view becomes visible (false).
+                     */
+                    persistent: {
+                        value: false,
+                        type: Boolean,
+                        reflectToAttribute: true
+                    },
+                    /** Whether the view's HTML document has been resolved or not. */
+                    resolved: {
+                        value: false,
+                        type: Boolean,
+                        readOnly: true,
+                        notify: true
+                    },
+                    /** The URL of the view HTML document that contains the view element. */
+                    href: {
+                        type: String,
+                        reflectToAttribute: true
+                    },
+                    /** Whether the view is currently visible or not .*/                    
+                    visible: {
+                        value: false,
+                        type: Boolean,
+                        readOnly: true,
+                        notify: true
+                    }
+                };
+            }
+
+            _resolve(onSuccess = null, onError = null) {
+                if (!this.resolved) {
+                    console.log(`Resolving view '${this.name}'`);
+                    let resolvedPageUrl = this.resolveUrl(this.href);
+                    Polymer.importHref(
+                        resolvedPageUrl,
+                        evt => { 
+                            console.log(`View '${this.name}' was resolved successfully`);
+                            this.resolved = true; 
+                            if (onSuccess) {
+                                onSuccess();
+                            }
+                        },
+                        evt => { 
+                            console.log(`An error occurred while resolving '${this.name}'`);
+                            this.resolved = false; 
+                            if (onError) {
+                                onError(evt); 
+                            }
+                        },
+                        true);
+                } else {
+                    console.log(`View '${this.name}' has already been resolved`);
+                    onSuccess();
+                }
+            }
+
+            /**
+             * Shows the view, adding it to the light DOM of the `<prakio-view>` element.
+             * If the view is already visible, nothing happens.
+             *
+             * @param {Function} onError a callback function that gets called if there is an error resolving the view.
+             */
+            show(onError = null) {
+                // Ignore if already visible
+                if (!this.visible) {
+                    console.log(`Making view '${this.name}' visible`);
+                    this._resolve(() => {
+                        if (!this.persistent || !this._viewElement) {
+                            this._viewElement = document.createElement(this.elementName);
+                        }
+                        this.appendChild(this._viewElement);
+                        this._setVisible(true);
+                    }, onError);
+                }
+            }
+
+            /**
+             * Hides the view, removing it from the light DOM of the `<prakio-view>` element.
+             * If the view is already hidden, nothing happens.
+             */
+            hide() {
+                // Ignore if already hidden
+                if (this.visible) {
+                    console.log(`Making view '${this.name}' invisible`);
+                    this.removeChild(this._viewElement);
+                    if (!this.persistent) {
+                        this._viewElement = null;
+                    }
+                    this._setVisible(false);
+                }
+            }
+        }        
+        window.customElements.define(PrakioView.is, PrakioView);
+    </script>    
+</dom-module>      

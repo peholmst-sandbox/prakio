@@ -1,0 +1,89 @@
+<!--
+@license
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="prakio-views">
+    <template strip-whitespace>
+        <style>
+            :host {
+                display: block;
+            }
+            #error { /* Hide by default */
+                display: none;
+            }
+        </style>
+        <!-- Use a wrapping div to be able to show and hide the error message -->
+        <div id="error">
+            <slot name="error">
+                An error occurred and the requested view <strong>[[selected]]</strong> cannot be shown.
+            </slot>
+        </div>
+        <slot id="slot"></slot>
+    </template>
+    <script>
+        /**
+         * `<prakio-views>` is a container for one or more `<prakio-view>` elements. 
+         * Only one view can be visible at a time and this view is selected using the
+         * `selected` property.
+         *
+         * If an error occurs when showing a view, for example if the view does not exist
+         * or cannot be resolved, an error message is shown. This error message can be 
+         * customized by providing content for the `error` slot.
+         *
+         * @customElement
+         * @polymer
+         */
+        class PrakioViews extends Polymer.Element {
+            static get is() { return 'prakio-views'; }
+        
+            static get properties() {
+                return {
+                    /** The name of the currently selected `<prakio-view>`. */
+                    selected: {
+                        type: String,
+                        observer: '_onSelectedChanged'
+                    },
+                    /** Whether there was an error showing the currently selected `<prakio-view>` or not. */
+                    error: {
+                        type: Boolean,
+                        value: false,
+                        readOnly: true,
+                        notify: true,
+                        observer: '_onErrorChanged'
+                    }
+                };
+            }
+
+            _onSelectedChanged(newValue) {
+                // Reset any error
+                this._setError(false);
+                // Hide old view
+                if (this._currentView && this._currentView.hide) { // Check that the element has a hide() method
+                    this._currentView.hide();
+                    this._currentView = null;
+                }
+                console.log(`Selected view changed to '${newValue}'`);
+                for (let view of this.$.slot.assignedNodes()) {
+                    if (view.name === newValue && view.show) { // Check that the element has a show() method
+                        this._currentView = view;
+                        view.show(() => this._setError(true));
+                        return;
+                    }
+                }
+                console.log(`Did not find a suitable element for view '${newValue}'`);
+                this._setError(true);
+            }
+
+            _onErrorChanged(newValue) {
+                if (!newValue) {                    
+                    this.$.error.style.display = 'none';
+                } else {
+                    this.$.error.style.display = 'block';
+                }
+            }
+        }        
+        window.customElements.define(PrakioViews.is, PrakioViews);
+    </script>
+</dom-module>      

@@ -11,7 +11,6 @@
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
@@ -20,9 +19,9 @@
 <!-- Theme with colors -->
 <link rel="import" href="shared-styles.html">
 
-<!-- Lazily import views. They will be explicitly imported on demand using JavaScript. -->
-<link rel="lazy-import" href="assignments-view.html">
-<link rel="lazy-import" href="error-view.html">
+<!-- View navigation -->
+<link rel="import" href="prakio-views.html">
+<link rel="import" href="prakio-view.html">
 
 <dom-module id="prakio-app">
   <template>
@@ -33,17 +32,7 @@
 
       app-drawer-layout:not([narrow]) [drawer-toggle] {
         display: none;
-      }
-
-      app-header {
-        color: #fff;
-        background-color: var(--default-primary-color);
-        @apply --shadow-elevation-3dp;
-      }
-
-      app-header paper-icon-button {
-        --paper-icon-button-ink-color: white;
-      }
+      }    
 
       .drawer-list {
         margin: 0 20px;
@@ -119,48 +108,18 @@
       -->
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
         <!-- TODO Implement menu -->
-        <app-toolbar>Menu</app-toolbar>
+        <app-toolbar>PRAKIO</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="[[rootPath]]view1">View One</a>
+          <a name="view1" href="[[rootPath]]assignments">Assignments</a>
           <a name="view2" href="[[rootPath]]view2">View Two</a>
           <a name="view3" href="[[rootPath]]view3">View Three</a>
         </iron-selector>
       </app-drawer>
 
       <!-- Main content -->
-      <app-header-layout has-scrolling-region>
-
-        <app-header slot="header" reveals effects="waterfall">
-          <app-toolbar>
-            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <!-- TODO How to fill in parts here from the iron-pages below? -->
-          </app-toolbar>
-        </app-header>        
-
-        <!--
-          The 'iron-pages' element is used for actually navigating between views, updating the DOM.
-          The views are themselves custom elements that are loaded on demand using JavaScript.
-
-          'selected' is the currently selected view/page.
-
-          'attr-for-selected' is an attribute on the child elements of 'iron-pages' that should be used
-            to pick the correct view to show.
-
-          'fallback-selection' is the view that should be shown if 'selected' contains a value that can't
-            be found within the child elements.
-
-          'role' is used for ARIA and has nothing to do with the 'iron-pages' element itself.
-        -->
-        <iron-pages
-            selected="[[page]]"
-            attr-for-selected="name"
-            fallback-selection="error"
-            role="main">
-          <assignments-view name="assignments"></assignments-view>
-          <!-- TODO Add additional views here. Files should be named '[name]-view.html'. -->
-          <error-view name="error"></error-view>
-        </iron-pages>
-      </app-header-layout>
+      <prakio-views selected="[[page]]">
+        <prakio-view name="assignments" href="views/assignments-view.html" element-name="assignments-view">
+       </prakio-views>
     </app-drawer-layout>
   </template>
 
@@ -172,8 +131,7 @@
         return {
           page: {
             type: String,
-            reflectToAttribute: true,
-            observer: '_pageChanged',
+            reflectToAttribute: true
           },
           routeData: Object,
           subroute: String,
@@ -201,24 +159,6 @@
         if (!this.$.drawer.persistent) {
           this.$.drawer.close();
         }
-      }
-
-      // This method is invoked whenever the 'page' property is changed. This property can be set as
-      // an attribute of the 'prakio-app' element, but is also set by e.g. the '_routePageChanged' method.
-      _pageChanged(page) {
-        // Load page on demand. Show error view on failures.
-        var resolvedPageUrl = this.resolveUrl(page + '-view.html');
-        Polymer.importHref(
-            resolvedPageUrl,
-            null,
-            this._showErrorPage.bind(this),
-            true);
-      }
-
-      // This method shows the error view. The error view is treated as any other view and needs to be
-      // declared and imported like the others.
-      _showErrorPage() {
-        this.page = 'error';
       }
     }
 
