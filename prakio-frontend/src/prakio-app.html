@@ -5,16 +5,10 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
-<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-
-<link rel="import" href="../bower_components/vaadin-icons/vaadin-icons.html">
 
 <!-- Theme with colors -->
 <link rel="import" href="shared-styles.html">
@@ -58,13 +52,16 @@
 
         <app-drawer-layout fullbleed narrow="{{narrow}}">
             <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
-                <app-toolbar>PRAKIO</app-toolbar>
+                <app-toolbar>
+                    PRAKIO
+                    <!-- TODO Current user's avatar -->
+                </app-toolbar>
                 <iron-selector selected="[[view]]" attr-for-selected="name" class="drawer-list" role="navigation">
                     <a name="assignments" href="[[rootPath]]assignments">Assignment Reports</a>
                 </iron-selector>
             </app-drawer>
 
-            <prakio-views selected="[[view]]">
+            <prakio-views selected="[[view]]" id="views">
                 <!-- TODO How to pass subroute info to the view that becomes visible? -->
                 <prakio-view name="assignments" href="views/assignments-view.html" element-name="assignments-view" narrow="[[narrow]]">
             </prakio-views>
@@ -107,6 +104,15 @@
                 if (!this.$.drawer.persistent) {
                     this.$.drawer.close();
                 }
+            }
+
+            ready() {
+                super.ready();
+                // This event can be dispatched from views to toggle the side bar menu. Here, we handle the event.
+                this.$.views.addEventListener('toggle-menu', e => {
+                    console.log('Toggling menu');
+                    this.$.drawer.toggle();
+                });
             }
         }
         window.customElements.define(PrakioApp.is, PrakioApp);
