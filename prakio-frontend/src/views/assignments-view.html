@@ -121,13 +121,15 @@
             handle-as="json"
             last-response="{{assignments}}"
             last-error="{{loadingAssignmentsError}}"
-            loading="{{loadingAssignments}}"></iron-ajax>
+            loading="{{loadingAssignments}}"
+            id="ajax"></iron-ajax>
 
         <app-header-layout id="layout">
             <app-header slot="header" reveals effects="waterfall">
                 <app-toolbar>
-                    <paper-icon-button icon="menu" id="toggle-menu" on-click="_onToggleMenu"></paper-icon-button>
+                    <paper-icon-button icon="menu" id="toggle-menu" on-click="_onToggleMenuClicked"></paper-icon-button>
                     <div main-title>Assignment Reports</div>
+                    <paper-icon-button icon="refresh" on-click="_onRefreshClicked" disabled="[[loadingAssignments]]"></paper-icon-button>
                 </app-toolbar>
                 <template is="dom-if" if="[[loadingAssignments]]">
                     <paper-progress value="10" indeterminate></paper-progress>        
@@ -199,12 +201,16 @@
                 }
             }
 
-            _onToggleMenu() {
+            _onToggleMenuClicked() {
                 let event = new CustomEvent('toggle-menu', {
                     bubbles: true, 
                     composed: true
                 });
                 this.dispatchEvent(event);
+            }
+
+            _onRefreshClicked() {
+                this.$.ajax.generateRequest();
             }
         }
         window.customElements.define(AssignmentsView.is, AssignmentsView);
