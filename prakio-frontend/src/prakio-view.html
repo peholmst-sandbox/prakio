@@ -51,21 +51,22 @@
                         type: String,
                         reflectToAttribute: true
                     },
-                    /** Whether the view is currently visible or not .*/                    
+                    /** Whether the view is currently visible or not. */                    
                     visible: {
                         value: false,
                         type: Boolean,
                         readOnly: true,
                         notify: true
                     },
-                    /** Whether the main application layout is narrow or not. */
-                    narrow: {
-                        value: false,
-                        type: Boolean,
-                        reflectToAttribute: true,
-                        observer: '_onNarrowChanged'
-                    }
+                    /** Any parameters to pass to the actual view element. */                    
+                    parameters: Object
                 };
+            }
+
+            static get observers() {
+                return [
+                    '_onParametersChanged(parameters.*)' // Observer that transfers all changed parameters to the actual view element
+                ];
             }
 
             _resolve(onSuccess = null, onError = null) {
@@ -76,7 +77,7 @@
                         resolvedPageUrl,
                         evt => { 
                             console.log(`View '${this.name}' was resolved successfully`);
-                            this.resolved = true; 
+                            this._setResolved(true);
                             if (onSuccess) {
                                 onSuccess();
                             }
@@ -95,9 +96,11 @@
                 }
             }
 
-            _onNarrowChanged(newValue) {
-                if (this._viewElement) {
-                    this._viewElement.narrow = newValue;
+            _onParametersChanged(changeRecord) {
+                if (this.visible) {
+                    console.log(`Setting parameter '${changeRecord.path}' to value '${changeRecord.value}' on view '${this.name}'`);
+                    this._viewElement.set(changeRecord.path, changeRecord.value);
+                    this._viewElement.notifyPath(changeRecord.path);
                 }
             }
 
@@ -113,9 +116,15 @@
                     console.log(`Making view '${this.name}' visible`);
                     this._resolve(() => {
                         if (!this.persistent || !this._viewElement) {
+                            console.log(`Creating new element for view '${this.name}'`);
                             this._viewElement = document.createElement(this.elementName);
-                            this._viewElement.narrow = this.narrow; // Move value of 'narrow' property to view
+                        } else {
+                            console.log(`Reusing existing element for view '${this.name}'`);
                         }
+                        // Copy the parameters, otherwise they will only get updated when the observer method is invoked
+                        console.log(`Transferring parameters to view '${this.name}'`);
+                        this._viewElement.parameters = Object.assign({}, this.parameters);
+
                         this.appendChild(this._viewElement);
                         this._setVisible(true);
                     }, onError);

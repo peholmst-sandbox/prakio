@@ -143,7 +143,7 @@
                 </template>
                 <div class="list">
                     <template is="dom-repeat" items="[[assignments]]">
-                        <div class="list-item">
+                        <div class="list-item" on-click="_onItemClicked">
                             <div class$="code [[item.state]]">[[item.code]]</div>
                             <div class="primary">
                                 [[item.description]]
@@ -175,12 +175,16 @@
                         type: String,
                         value: AppConfiguration.apiEndpoint
                     },
-                    narrow: {
-                        type: Boolean,
-                        notify: true,
-                        observer: '_onNarrowChanged'
-                    }
+                    // Parameters passed from the enclosing 'prakio-view' element.
+                    parameters: Object, 
+                    // This shouldn't be neccessary, but the Analyzer isn't picking up
+                    // Polymer.Element#rootPath
+                    rootPath: String,                    
                 };
+            }
+
+            static get observers() {
+                return ['_onNarrowChanged(parameters.narrow)'];
             }
 
             _isPending(state) {
@@ -192,6 +196,7 @@
             }
 
             _onNarrowChanged(newValue) {
+                // TODO Maybe move this to a mixin?
                 console.log("Narrow changed inside assignments view, narrow is: " + newValue);
                 let layout = this.$.layout;
                 if (newValue) {
@@ -202,6 +207,7 @@
             }
 
             _onToggleMenuClicked() {
+                // TODO Maybe move this to a mixin?
                 let event = new CustomEvent('toggle-menu', {
                     bubbles: true, 
                     composed: true
@@ -211,6 +217,12 @@
 
             _onRefreshClicked() {
                 this.$.ajax.generateRequest();
+            }
+
+            _onItemClicked(evt) {
+                // TODO Maybe turn into a method imprted by a mixin?
+                window.history.pushState({}, null, `${this.rootPath}assignmentReport/${evt.model.item.id}`);
+                window.dispatchEvent(new CustomEvent('location-changed'));
             }
         }
         window.customElements.define(AssignmentsView.is, AssignmentsView);

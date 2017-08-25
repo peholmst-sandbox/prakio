@@ -48,22 +48,25 @@
             route="{{route}}"
             pattern="[[rootPath]]:page"
             data="{{routeData}}"
-            tail="{{subroute}}"></app-route>
+            tail="{{viewParams.subroute}}"></app-route> <!-- Pass subroute as a view parameter -->
 
-        <app-drawer-layout fullbleed narrow="{{narrow}}">
-            <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
+        <!-- The 'narrow' flag is passed as a view parameter so that the views can update their headers etc. -->
+        <app-drawer-layout fullbleed narrow="{{viewParams.narrow}}">
+            <app-drawer id="drawer" slot="drawer" swipe-open="[[viewParams.narrow]]">
                 <app-toolbar>
                     PRAKIO
                     <!-- TODO Current user's avatar -->
                 </app-toolbar>
                 <iron-selector selected="[[view]]" attr-for-selected="name" class="drawer-list" role="navigation">
-                    <a name="assignments" href="[[rootPath]]assignments">Assignment Reports</a>
+                    <a name="assignmentReports" href="[[rootPath]]assignmentReports">Assignment Reports</a>
                 </iron-selector>
             </app-drawer>
 
             <prakio-views selected="[[view]]" id="views">
-                <!-- TODO How to pass subroute info to the view that becomes visible? -->
-                <prakio-view name="assignments" href="views/assignments-view.html" element-name="assignments-view" narrow="[[narrow]]">
+                <!-- Remember to bind the 'viewParams' property to 'parameters', otherwise the views will not get access to important information
+                     such as the subroute, etc. -->
+                <prakio-view name="assignmentReports" href="views/assignments-view.html" element-name="assignments-view" parameters="[[viewParams]]" persistent></prakio-view>
+                <prakio-view name="assignmentReport" href="views/assignment-view.html" element-name="assignment-view" parameters="[[viewParams]]"></prakio-view>
             </prakio-views>
         </app-drawer-layout>
     </template>
@@ -79,7 +82,11 @@
                         reflectToAttribute: true
                     },
                     routeData: Object,
-                    subroute: String,
+                    viewParams: {
+                        type: Object,
+                        // Important to create an empty initial object that the actual parameters can be added to.
+                        value: () => { return {}; } 
+                    },
                     // This shouldn't be neccessary, but the Analyzer isn't picking up
                     // Polymer.Element#rootPath
                     rootPath: String,
@@ -97,8 +104,8 @@
             // we should navigate to a different view within our application.
             _routePageChanged(page) {
                 // If no page was found in the route data, page will be an empty string.
-                // Deault to 'assignments' in that case.
-                this.view = page || 'assignments';
+                // Deault to 'listAssignmentReports' in that case.
+                this.view = page || 'assignmentReports';
 
                 // Close a non-persistent drawer when the page & route are changed.
                 if (!this.$.drawer.persistent) {
