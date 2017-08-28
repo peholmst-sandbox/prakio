@@ -44,5 +44,52 @@
             "timestamp": "2017-07-15T23:10:01Z",
             "state": "done"
         }
+    ],
+    "assignments": [
+        {
+            "id": 1,
+            "dispatchReport": {
+                "opened": "2017-08-14T19:45:21Z",
+                "closed": "2017-08-14T20:14:22Z",
+                "imported": "2017-08-14T21:00:00Z",
+                "origin": "DART @ Junior Firefighter's Emergency Response Center",
+                "code": "402",
+                "description": "Building fire: medium",
+                "location": {
+                    "municipality": "Pargas",
+                    "address": "Skolgatan 1",
+                    "coordinates": {
+                        "lat": 60.298485,
+                        "lon": 22.301742
+                    }
+                },
+                "contents": "Two-storey wooden building, smoke coming from the kitchen window, smoke alarm beeping",
+                "reporter": {
+                    "name": "John Doe",
+                    "phone": "1234567890"
+                },
+                "resources": [
+                    {
+                        "callSign": "RVSPG31",
+                        "dispatched": "2017-08-14T19:46:55Z",
+                        "enRoute": "2017-08-14T19:50:11Z",
+                        "onScene": "2017-08-14T19:52:33Z",
+                        "detached": "2017-08-14T20:10:49Z",
+                        "returned": "2017-08-14T20:14:10Z"
+                    },
+                    {
+                        "callSign": "RVSPG13",
+                        "dispatched": "2017-08-14T19:46:58Z",
+                        "enRoute": "2017-08-14T19:50:15Z",
+                        "onScene": "2017-08-14T19:53:00Z",
+                        "detached": "2017-08-14T20:00:05Z",
+                        "returned": "2017-08-14T20:04:44Z"                        
+                    }
+                ]                
+            },
+            "assignmentReport": {
+                "state": "pending"
+            }         
+        }
     ]
 }

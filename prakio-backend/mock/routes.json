@@ -1,3 +1,5 @@
 {
-    "/api/1.0/assignments/brief": "/assignments_brief"
+    "/api/1.0/assignments/brief": "/assignments_brief",
+    "/api/1.0/assignments/brief/:id": "/assignments_brief/:id",
+    "/api/1.0/assignments/:id": "/assignments/:id"
 }
