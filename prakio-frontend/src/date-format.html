@@ -1,0 +1,43 @@
+<script>
+    (function() {
+        window.DateFormat = {
+
+            parseDate: function(date) {
+                if (date === null) {
+                    return null;
+                } else if (date instanceof Date) {
+                    return date;
+                } else {
+                    return new Date(date);
+                }
+            },
+
+            formatTime: function(date) {
+                let pd = this.parseDate(date);
+                if (pd) {
+                    return pd.toLocaleTimeString();
+                } else {
+                    return pd;
+                }
+            },
+
+            formatDate: function(date) {
+                let pd = this.parseDate(date);
+                if (pd) {
+                    return pd.toLocaleDateString();
+                } else {
+                    return pd;
+                }
+            },
+
+            formatDateTime: function(date) {
+                let pd = this.parseDate(date);
+                if (pd) {
+                    return `${pd.toLocaleDateString()} ${pd.toLocaleTimeString()}`;
+                } else {
+                    return pd;
+                }
+            }
+        };
+    })();
+</script>

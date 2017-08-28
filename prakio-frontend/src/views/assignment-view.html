@@ -8,9 +8,13 @@
 <link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 
 <link rel="import" href="../shared-styles.html">
 
@@ -22,9 +26,78 @@
                 @apply --paper-font-common-base;                
             }
 
-            app-header app-toolbar [main-title] {
-                padding-left: 16px;
-            }            
+            .subhead {
+                padding-top: 16px;
+                @apply --paper-font-subhead;      
+                color: var(--primary-color);
+            }
+
+            iron-pages {
+                padding: 16px;
+                max-width: 640px;
+            }
+
+            .resources {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: auto;
+                @apply --shadow-elevation-3dp;
+                margin-top: 8px;
+            }
+
+            .resources table {
+                border-collapse: collapse;
+            }
+
+            .resources th {
+                @apply --paper-font-caption;
+                color: var(--secondary-text-color);
+                font-weight: 500;
+                text-align: left;
+            }
+
+            .resources td, .resources th {
+                padding: 8px 16px;
+            }
+
+            .resources td {
+            }
+
+            .resources tr + tr {
+                border-top: 1px solid var(--divider-color);
+            }
+
+            @media(min-width: 640px) {
+                #dispatchReport {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr 1fr 1fr;
+                    grid-column-gap: 8px;
+                }
+
+                #dispatchReport .subhead {
+                    grid-column: 1 / span 4;
+                }
+
+                #dispatchReport paper-textarea {
+                    grid-column: span 4;
+                }
+
+                #dispatchReport paper-input {
+                    grid-column: span 2;
+                }
+
+                #dispatchReport .lat, #dispatchReport .lon, #dispatchReport .code {
+                    grid-column: span 1;
+                }
+
+                #dispatchReport .description {
+                    grid-column: span 3;
+                }
+
+                #dispatchReport .contents, #dispatchReport .resources, #dispatchReport .origin {
+                    grid-column: 1 / span 4;
+                }                
+            }
         </style>
 
         <app-route
@@ -32,18 +105,90 @@
             pattern="/:id"
             data="{{subrouteData}}"></app-route>
 
+        <iron-ajax
+            auto
+            url="[[apiEndpoint]]/api/1.0/assignments/[[subrouteData.id]]"
+            handle-as="json"
+            last-response="{{model}}"
+            last-error="{{loadingModelError}}"
+            loading="{{loadingModel}}"
+            id="ajax"></iron-ajax>
+
         <app-header-layout>
             <app-header slot="header" reveals effects="waterfall">
                 <app-toolbar>
                     <paper-icon-button icon="arrow-back" on-click="_onGoBackClicked"></paper-icon-button>
                     <div main-title>Edit Assignment Report</div>
                 </app-toolbar>
-                <!--<template is="dom-if" if="[[loadingAssignments]]">
+                <paper-tabs scrollable selected="{{selectedTab}}">
+                    <paper-tab>Dispatch Report</paper-tab>
+                    <paper-tab>Assignment Report</paper-tab>
+                </paper-tabs>
+                <template is="dom-if" if="[[loadingModel]]">
                     <paper-progress value="10" indeterminate></paper-progress>        
-                </template>-->
+                </template>
             </app-header>
             <div>
-                <!-- TODO main content -->
+                <template is="dom-if" if="[[loadingModelError]]">
+                    <div class="error">
+                        There was an error retrieving the report. Please try again.
+                    </div>
+                </template>     
+                <template is="dom-if" if="[[!loadingModelError]]">       
+                    <iron-pages selected="[[selectedTab]]">
+                        <div id="dispatchReport">
+                            <paper-input label="Report opened at" readonly value="[[_formatDateTime(model.dispatchReport.opened)]]"></paper-input>
+                            <paper-input label="Report closed at" readonly value="[[_formatDateTime(model.dispatchReport.closed)]]"></paper-input>
+
+                            <div class="subhead">Incident Details</div>
+                            <paper-input class="code" label="Code" readonly value="[[model.dispatchReport.code]]"></paper-input>
+                            <paper-input class="description" label="Description" readonly value="[[model.dispatchReport.description]]"></paper-input>
+                            <paper-textarea class="contents" label="Contents" readonly value="[[model.dispatchReport.contents]]"></paper-textarea>
+
+                            <div class="subhead">Location</div>
+                            <paper-input label="Municipality" readonly value="[[model.dispatchReport.location.municipality]]"></paper-input>
+                            <paper-input class="lat" label="Latitude" readonly value="[[model.dispatchReport.location.coordinates.lat]]"></paper-input>
+                            <paper-input class="lon" label="Longitude" readonly value="[[model.dispatchReport.location.coordinates.lon]]"></paper-input>
+                            <paper-textarea label="Address" readonly value="[[model.dispatchReport.location.address]]"></paper-textarea>
+
+                            <div class="subhead">Reporter</div>
+                            <paper-input label="Name" readonly value="[[model.dispatchReport.reporter.name]]"></paper-input>
+                            <paper-input label="Phone Number" readonly value="[[model.dispatchReport.reporter.phone]]"></paper-input>
+
+                            <div class="subhead">Resources</div>                            
+                            <div class="resources">
+                                <table>
+                                    <tr>
+                                        <th>Call sign</th>
+                                        <th>Dispatched</th>
+                                        <th>En route</th>
+                                        <th>On scene</th>
+                                        <th>Detached</th>
+                                        <th>Returned</th>
+                                    </tr>
+                                    <template is="dom-repeat" items="[[model.dispatchReport.resources]]">
+                                        <tr class="resource">
+                                            <td>[[item.callSign]]</td>
+                                            <td>[[_formatTime(item.dispatched)]]</td>
+                                            <td>[[_formatTime(item.enRoute)]]</td>
+                                            <td>[[_formatTime(item.onScene)]]</td>
+                                            <td>[[_formatTime(item.detached)]]</td>
+                                            <td>[[_formatTime(item.returned)]]</td>
+                                        </tr>
+                                    </template>
+                                </table>
+                            </div>    
+
+                            <div class="subhead">Report Identification</div>
+                            <paper-input label="Report ID" readonly value="[[model.id]]"></paper-input>
+                            <paper-input label="Imported at" readonly value="[[_formatDateTime(model.dispatchReport.imported)]]"></paper-input>
+                            <paper-input class="origin" label="Origin" readonly value="[[model.dispatchReport.origin]]"></paper-input>
+                        </div>
+                        <div>
+                            Assignment Report
+                        </div>
+                    </iron-pages>
+                </template>
             </div>
         </app-header-layout>
     </template>
@@ -56,7 +201,11 @@
                 return {
                     apiEndpoint: {
                         type: String,
-                        value: AppConfiguration.apiEndpoint
+                        value: AppConfiguration.apiEndpoint /* Declared in index.html */
+                    },
+                    selectedTab: {
+                        type: Number,
+                        value: 0
                     },
                     subrouteData: Object,
                     // Parameters passed from the enclosing 'prakio-view' element.
@@ -80,6 +229,10 @@
                 // TODO Load from backend and update form
             }
         }
+        // TODO Figure out a better way of doing the date formatting.
+        AssignmentView.prototype._formatDateTime = window.DateFormat.formatDateTime.bind(window.DateFormat);
+        AssignmentView.prototype._formatTime = window.DateFormat.formatTime.bind(window.DateFormat);
+
         window.customElements.define(AssignmentView.is, AssignmentView);
     </script>
 </dom-module>
