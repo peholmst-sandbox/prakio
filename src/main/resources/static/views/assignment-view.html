@@ -2,19 +2,19 @@
 @license
 -->
 
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
-<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 
 <link rel="import" href="../shared-styles.html">
 
@@ -30,6 +30,11 @@
                 padding-top: 16px;
                 @apply --paper-font-subhead;      
                 color: var(--primary-color);
+            }
+
+            .subheadDescr {
+                color: var(--secondary-text-color);
+                font-size: 11px;
             }
 
             iron-pages {
@@ -58,9 +63,6 @@
 
             .resources td, .resources th {
                 padding: 8px 16px;
-            }
-
-            .resources td {
             }
 
             .resources tr + tr {
@@ -184,8 +186,21 @@
                             <paper-input label="Imported at" readonly value="[[_formatDateTime(model.dispatchReport.imported)]]"></paper-input>
                             <paper-input class="origin" label="Origin" readonly value="[[model.dispatchReport.origin]]"></paper-input>
                         </div>
-                        <div>
-                            Assignment Report
+                        <div id="assignmentReport">
+                            <div class="subhead">Dispatch Report Summary</div>
+                            <paper-input label="Report opened at" readonly value="[[_formatDateTime(model.assignmentReport.dispatchSummary.opened)]]"></paper-input>
+                            <paper-input class="code" label="Code" readonly value="[[model.assignmentReport.dispatchSummary.code]]"></paper-input>
+                            <paper-input class="description" label="Description" readonly value="[[model.assignmentReport.dispatchSummary.description]]"></paper-input>
+                            <paper-textarea class="contents" label="Contents" readonly value="[[model.assignmentReport.dispatchSummary.contents]]"></paper-textarea>
+
+                            <div class="subhead">Location</div>
+                            <div class="subheadDescr">This information is copied from the dispatch report. Please make corrections as necessary.</div>
+                            <paper-input label="Municipality" value="[[model.assignmentReport.location.municipality]]"></paper-input>
+                            <paper-input class="lat" label="Latitude" value="[[model.assignmentReport.location.coordinates.lat]]"></paper-input>
+                            <paper-input class="lon" label="Longitude" value="[[model.assignmentReport.location.coordinates.lon]]"></paper-input>
+                            <paper-textarea label="Address" value="[[model.assignmentReport.location.address]]"></paper-textarea>  
+                            
+                            <!-- TODO Continue here -->
                         </div>
                     </iron-pages>
                 </template>
